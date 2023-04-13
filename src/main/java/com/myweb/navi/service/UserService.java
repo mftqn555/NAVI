@@ -23,5 +23,10 @@ public class UserService {
 		boolean unique = userMapper.selectEmail(email) == null ? true : false;
 		return new UniqueResponse(unique); 
 	}
+	
+	public UniqueResponse findExistNickname(String nickname) {
+		boolean unique = userMapper.selectNickname(nickname) == null ? true : false;
+		return new UniqueResponse(unique);
+	}
 
 }

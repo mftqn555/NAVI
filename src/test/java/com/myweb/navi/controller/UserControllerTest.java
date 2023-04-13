@@ -1,98 +1,113 @@
 package com.myweb.navi.controller;
 
-import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import org.junit.Before;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.filter.CharacterEncodingFilter;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.myweb.navi.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.myweb.navi.dto.SignupRequest;
-import com.myweb.navi.dto.UniqueResponse;
-import com.myweb.navi.mapper.UserMapper;
 
-@RunWith(SpringRunner.class)
-@WebMvcTest(UserController.class)
+@SpringBootTest
+@AutoConfigureMockMvc
 public class UserControllerTest {
+
+	@Autowired
+	private MockMvc mockmvc;
 	
 	@Autowired
-	private MockMvc mockMvc;
+	private ObjectMapper objectMapper;
 	
-	@MockBean
-	private WebApplicationContext wac;
-
-	@MockBean
-	UserService userService;
-	
-	@MockBean
-	UserMapper userMapper;
-	
-	@Before
-	public void setup() {
-		this.mockMvc = MockMvcBuilders.webAppContextSetup(wac)
-				.addFilters(new CharacterEncodingFilter("UTF-8", true))
-				.alwaysDo(print()).build();
+	// 이메일 체크
+	@Test
+	@DisplayName("요청한 이메일값이 유니크한 값인가? - false")
+	void 이메일중복체크_거짓() throws Exception {
+		this.mockmvc
+				.perform(get("/users/signup/exist").param("email", "abc@naver.com")
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.unique", "false").exists())
+				.andDo(print());
 	}
 	
-	@DisplayName("회원가입 성공시 201 반환")
 	@Test
-	void 회원가입_성공() throws Exception {
-		SignupRequest signupRequest = new SignupRequest("abc123@naver.com", "abc123", "dfadfd");
-		mockMvc.perform(post("/users/signup")
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(switchJsonString(signupRequest)))
+	@DisplayName("요청한 이메일값이 유니크한 값인가? - true")
+	void 이메일중복체크_참() throws Exception {
+		this.mockmvc
+				.perform(get("/users/signup/exist").param("email", "bcd@naver.com")
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.unique", "false").exists())
+				.andDo(print());
+	}
+	
+	// 닉네임 체크
+	@Test
+	@DisplayName("요청한 닉네임값이 유니크한 값인가? - false")
+	void 닉네임중복체크_거짓() throws Exception {
+		this.mockmvc
+				.perform(get("/users/signup/exist").param("nickname", "abcd")
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.unique", "false").exists())
+				.andDo(print());
+	}
+	
+	@Test
+	@DisplayName("요청한 이메일값이 유니크한 값인가? - true")
+	void 닉네임중복체크_참() throws Exception {
+		this.mockmvc
+				.perform(get("/users/signup/exist").param("nickname", "bcde")
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.unique", "false").exists())
+				.andDo(print());
+	}
+	
+	// 회원가입 테스트
+	@Test
+	@DisplayName("회원가입 테스트 - 성공")
+	@Transactional // 테스트 수행 후 rollback
+	void 회원가입테스트_성공() throws Exception {
+		Map<String, String> input = new HashMap<>();
+	    input.put("email", "test3@google.com");
+	    input.put("password", "teword123");
+	    input.put("nickname", "test3");
+		
+		this.mockmvc
+				.perform(post("/users/signup").contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(input))
+				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isCreated())
 				.andDo(print());
 	}
 	
-	@DisplayName("회원가입 실패, 잘못된 데이터 형식")
 	@Test
-	void 회원가입_실패() throws Exception {
-		SignupRequest signupRequest = new SignupRequest("abnavercom", "2", "a");
-		mockMvc.perform(post("/users/signup")
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(switchJsonString(signupRequest)))
+	@DisplayName("회원가입 테스트 - 이메일 형식 실패")
+	void 회원가입테스트_이메일_형식_실패() throws Exception {
+		Map<String, String> input = new HashMap<>();
+	    input.put("email", "test2google.com");
+	    input.put("password", "teword123");
+	    input.put("nickname", "test2");
+		
+		this.mockmvc
+				.perform(post("/users/signup").contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(input))
+				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isBadRequest())
 				.andDo(print());
 	}
 	
-	@DisplayName("이메일 중복 체크")
-	@Test
-	void 이메일중복체크() throws Exception {
-		boolean unique = userMapper.selectEmail("abc@naver.com") == null ? true : false;
-		UniqueResponse uniqueResponse = new UniqueResponse(unique);
-		
-		when(userService.findExistEmail("abc@naver.com")).thenReturn(uniqueResponse);
-		mockMvc.perform(MockMvcRequestBuilders
-		        .get("/users/signup/exist").param("email", "abc@naver.com"))
-		        .andExpect(status().isOk())
-		        .andExpect(jsonPath("$.unique").value("true"))
-		        .andDo(print());
-	}
-	
-	private static String switchJsonString(final Object obj) {
-		try {
-			final ObjectMapper mapper = new ObjectMapper();
-			return mapper.writeValueAsString(obj);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
 }

@@ -17,4 +17,7 @@ public interface UserMapper {
 	@Select("SELECT email FROM user WHERE email=#{email}")
 	String selectEmail(@Param("email") String email);
 	
+	@Select("SELECT nickname FROM user WHERE nickname=#{nickname}")
+	String selectNickname(@Param("nickname") String nickname);
+	
 }

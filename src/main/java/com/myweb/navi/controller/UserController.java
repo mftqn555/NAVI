@@ -45,10 +45,17 @@ public class UserController {
 		 return ResponseEntity.ok().body(uniqueResponse);
 	}
 	
+	@GetMapping(value = "/signup/exist", params = "nickname")
+	public ResponseEntity<UniqueResponse> nicknameCheck(@RequestParam String nickname){
+		UniqueResponse uniqueResponse = userService.findExistNickname(nickname);
+		return ResponseEntity.ok().body(uniqueResponse);
+	}
+	
+	
 	private static Map<String, String> errorResponse(BindingResult bindingResult) {
 		Map<String, String> errorMap = new HashMap<>();
 		for (FieldError error : bindingResult.getFieldErrors()) {
-			errorMap.put("message", error.getDefaultMessage());
+			errorMap.put(error.getField(), error.getDefaultMessage());
 		}
 		return errorMap;
 	}
