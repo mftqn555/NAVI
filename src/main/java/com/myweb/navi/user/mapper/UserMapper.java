@@ -4,7 +4,9 @@ import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
+import com.myweb.navi.user.dto.PasswordRequest;
 import com.myweb.navi.user.dto.SignupRequest;
 import com.myweb.navi.user.dto.UserResponse;
 
@@ -23,5 +25,8 @@ public interface UserMapper {
 	
 	@Select("SELECT * FROM user WHERE id=#{id}")
 	UserResponse selectUserInfoById(Long id);
+	
+	@Update("UPDATE user SET password=#{password} WHERE id=#{id}")
+	void updatePasswordById(PasswordRequest passwordRequest);
 	
 }

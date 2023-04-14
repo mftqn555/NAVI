@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.myweb.navi.user.dto.IdRequest;
+import com.myweb.navi.user.dto.PasswordRequest;
 import com.myweb.navi.user.dto.SignupRequest;
 import com.myweb.navi.user.dto.UniqueResponse;
 import com.myweb.navi.user.dto.UserResponse;
@@ -31,7 +33,7 @@ public class UserController {
 		userService.addUser(signupRequest);
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
-
+	
 	@GetMapping(value = "/signup/exist", params = "email")
 	public ResponseEntity<UniqueResponse> emailCheck(@RequestParam String email) {
 		 UniqueResponse uniqueResponse = userService.findExistEmail(email);
@@ -44,10 +46,16 @@ public class UserController {
 		return ResponseEntity.ok().body(uniqueResponse);
 	}
 	
-	@PostMapping(value = "/modify")
-	public ResponseEntity<UserResponse> userDetails(@RequestBody Long id) {
-		UserResponse userResponse = userService.findUserInfoById(id);
+	@PostMapping(value = "/modify/info")
+	public ResponseEntity<UserResponse> userDetails(@RequestBody IdRequest idRequest) {
+		UserResponse userResponse = userService.findUserInfoById(idRequest.getId());
 		return ResponseEntity.ok().body(userResponse);
+	}
+	
+	@PostMapping(value = "/modify/password")
+	public ResponseEntity<?> passwordModify(@RequestBody PasswordRequest passwordRequest) {
+		userService.modifyPasswordById(passwordRequest);
+		return ResponseEntity.noContent().build();
 	}
 	
 }
