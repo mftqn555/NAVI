@@ -3,9 +3,11 @@ package com.myweb.navi.user.dto;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 @Getter
+@EqualsAndHashCode
 public class SignupRequest {
 	
 	// 중복값은 다른 API 호출하여 체크 후, 체크가 안되면 못넘어가게 프론트에서 설정

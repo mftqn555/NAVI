@@ -3,12 +3,12 @@ package com.myweb.navi.user.service;
 import java.util.Set;
 
 import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
 import org.springframework.stereotype.Service;
 
+import com.myweb.navi.user.dto.NicknameRequest;
 import com.myweb.navi.user.dto.PasswordRequest;
 import com.myweb.navi.user.dto.SignupRequest;
 import com.myweb.navi.user.dto.UniqueResponse;
@@ -22,12 +22,12 @@ import com.myweb.navi.user.mapper.UserMapper;
 @Service
 public class UserService {
 	
-	// 예외 생성하기
-	
 	private final UserMapper userMapper;
+	private final ValidatorFactory factory;
 	
-	public UserService(UserMapper userMapper) {
+	public UserService(UserMapper userMapper, ValidatorFactory factory) {
 		this.userMapper = userMapper;
+		this.factory = factory;
 	}
 	
 	public void addUser(SignupRequest signupRequest) {
@@ -62,11 +62,22 @@ public class UserService {
 		userMapper.updatePasswordById(passwordRequest);
 	}
 	
+	public void modifyNicknameById(NicknameRequest nicknameRequest) {
+		validateNickname(nicknameRequest.getNickname());
+		userMapper.updateNicknameById(nicknameRequest);
+	}
+	
+	public void removeUserById(Long id) {
+		if(userMapper.selectUserInfoById(id) == null) {
+			throw new UserNotFoundException();
+		}
+		userMapper.deleteUserById(id);
+	}
+	
 	// 검증용 메서드
 	private Validator setUpValidator() {
-	    ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-	    return factory.getValidator();
-	}
+        return factory.getValidator();
+    }
 
 	private void validateEmail(String email) {
 		Validator validator = setUpValidator();

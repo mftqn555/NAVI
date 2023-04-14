@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.myweb.navi.user.dto.IdRequest;
+import com.myweb.navi.user.dto.NicknameRequest;
 import com.myweb.navi.user.dto.PasswordRequest;
 import com.myweb.navi.user.dto.SignupRequest;
 import com.myweb.navi.user.dto.UniqueResponse;
@@ -55,6 +56,18 @@ public class UserController {
 	@PostMapping(value = "/modify/password")
 	public ResponseEntity<?> passwordModify(@RequestBody PasswordRequest passwordRequest) {
 		userService.modifyPasswordById(passwordRequest);
+		return ResponseEntity.noContent().build();
+	}
+	
+	@PostMapping(value = "/modify/nickname")
+	public ResponseEntity<?> nicknameModify(@RequestBody NicknameRequest nicknameRequest) {
+		userService.modifyNicknameById(nicknameRequest);
+		return ResponseEntity.noContent().build();
+	}
+	
+	@PostMapping(value = "/delete")
+	public ResponseEntity<?> userRemove(@RequestBody IdRequest idRequest) {
+		userService.removeUserById(idRequest.getId());
 		return ResponseEntity.noContent().build();
 	}
 	
