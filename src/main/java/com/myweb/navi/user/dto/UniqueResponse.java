@@ -1,4 +1,4 @@
-package com.myweb.navi.dto;
+package com.myweb.navi.user.dto;
 
 import lombok.Getter;
 

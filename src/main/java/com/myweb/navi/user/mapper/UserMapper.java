@@ -1,11 +1,12 @@
-package com.myweb.navi.mapper;
+package com.myweb.navi.user.mapper;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
-import com.myweb.navi.dto.SignupRequest;
+import com.myweb.navi.user.dto.SignupRequest;
+import com.myweb.navi.user.dto.UserResponse;
 
 @Mapper
 public interface UserMapper {
@@ -19,5 +20,8 @@ public interface UserMapper {
 	
 	@Select("SELECT nickname FROM user WHERE nickname=#{nickname}")
 	String selectNickname(@Param("nickname") String nickname);
+	
+	@Select("SELECT * FROM user WHERE id=#{id}")
+	UserResponse selectUserInfoById(Long id);
 	
 }

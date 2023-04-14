@@ -1,13 +1,17 @@
-package com.myweb.navi.service;
+package com.myweb.navi.user.service;
 
 import org.springframework.stereotype.Service;
 
-import com.myweb.navi.dto.SignupRequest;
-import com.myweb.navi.dto.UniqueResponse;
-import com.myweb.navi.mapper.UserMapper;
+import com.myweb.navi.user.dto.SignupRequest;
+import com.myweb.navi.user.dto.UniqueResponse;
+import com.myweb.navi.user.dto.UserResponse;
+import com.myweb.navi.user.exception.UserNotFoundException;
+import com.myweb.navi.user.mapper.UserMapper;
 
 @Service
 public class UserService {
+	
+	// 예외 생성하기
 	
 	private final UserMapper userMapper;
 	
@@ -27,6 +31,12 @@ public class UserService {
 	public UniqueResponse findExistNickname(String nickname) {
 		boolean unique = userMapper.selectNickname(nickname) == null ? true : false;
 		return new UniqueResponse(unique);
+	}
+
+	public UserResponse findUserInfoById(Long id) {
+		UserResponse userResponse = userMapper.selectUserInfoById(id);
+		if(userResponse == null) throw new UserNotFoundException();
+		return userResponse;
 	}
 
 }

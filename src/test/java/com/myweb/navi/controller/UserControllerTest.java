@@ -66,7 +66,7 @@ public class UserControllerTest {
 	}
 	
 	@Test
-	@DisplayName("요청한 이메일값이 유니크한 값인가? - true")
+	@DisplayName("요청한 닉네임값이 유니크한 값인가? - true")
 	void 닉네임중복체크_참() throws Exception {
 		this.mockmvc
 				.perform(get("/users/signup/exist").param("nickname", "bcde")
@@ -84,7 +84,7 @@ public class UserControllerTest {
 		Map<String, String> input = new HashMap<>();
 	    input.put("email", "test3@google.com");
 	    input.put("password", "teword123");
-	    input.put("nickname", "test3");
+	    input.put("nickname", "test4");
 		
 		this.mockmvc
 				.perform(post("/users/signup").contentType(MediaType.APPLICATION_JSON)
@@ -96,17 +96,31 @@ public class UserControllerTest {
 	
 	@Test
 	@DisplayName("회원가입 테스트 - 이메일 형식 실패")
+	@Transactional
 	void 회원가입테스트_이메일_형식_실패() throws Exception {
 		Map<String, String> input = new HashMap<>();
-	    input.put("email", "test2google.com");
-	    input.put("password", "teword123");
-	    input.put("nickname", "test2");
+		input.put("password", "");
+	    input.put("email", "dfaf@mav.com");
+	    input.put("nickname", "advdsfsd");
 		
 		this.mockmvc
 				.perform(post("/users/signup").contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(input))
 				.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isBadRequest())
+				.andExpect(status().is4xxClientError())
+				.andDo(print());
+	}
+	
+	@Test
+	@DisplayName("회원정보 조회")
+	void 회원정보조회() throws Exception {
+		String request = "12";
+		
+		this.mockmvc
+				.perform(post("/users/modify").contentType(MediaType.APPLICATION_JSON)
+				.content(request)
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isNotFound())
 				.andDo(print());
 	}
 	

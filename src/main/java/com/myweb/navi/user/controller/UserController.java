@@ -1,14 +1,9 @@
-package com.myweb.navi.controller;
-
-import java.util.HashMap;
-import java.util.Map;
+package com.myweb.navi.user.controller;
 
 import javax.validation.Valid;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,9 +11,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.myweb.navi.dto.SignupRequest;
-import com.myweb.navi.dto.UniqueResponse;
-import com.myweb.navi.service.UserService;
+import com.myweb.navi.user.dto.SignupRequest;
+import com.myweb.navi.user.dto.UniqueResponse;
+import com.myweb.navi.user.dto.UserResponse;
+import com.myweb.navi.user.service.UserService;
 
 @RestController
 @RequestMapping("/users")
@@ -31,10 +27,7 @@ public class UserController {
 	}
 	
 	@PostMapping("/signup")
-	public ResponseEntity<?> signup(@Valid @RequestBody SignupRequest signupRequest, BindingResult bindingResult) {
-		if(bindingResult.hasErrors()) {
-			return new ResponseEntity<>(errorResponse(bindingResult), HttpStatus.BAD_REQUEST);
-		}
+	public ResponseEntity<?> signup(@Valid @RequestBody SignupRequest signupRequest) {
 		userService.addUser(signupRequest);
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
@@ -46,18 +39,15 @@ public class UserController {
 	}
 	
 	@GetMapping(value = "/signup/exist", params = "nickname")
-	public ResponseEntity<UniqueResponse> nicknameCheck(@RequestParam String nickname){
+	public ResponseEntity<UniqueResponse> nicknameCheck(@RequestParam String nickname) {
 		UniqueResponse uniqueResponse = userService.findExistNickname(nickname);
 		return ResponseEntity.ok().body(uniqueResponse);
 	}
 	
-	
-	private static Map<String, String> errorResponse(BindingResult bindingResult) {
-		Map<String, String> errorMap = new HashMap<>();
-		for (FieldError error : bindingResult.getFieldErrors()) {
-			errorMap.put(error.getField(), error.getDefaultMessage());
-		}
-		return errorMap;
+	@PostMapping(value = "/modify")
+	public ResponseEntity<UserResponse> userDetails(@RequestBody Long id) {
+		UserResponse userResponse = userService.findUserInfoById(id);
+		return ResponseEntity.ok().body(userResponse);
 	}
 	
 }
