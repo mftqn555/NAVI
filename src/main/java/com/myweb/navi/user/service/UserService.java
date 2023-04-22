@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.myweb.navi.advice.BusinessException;
 import com.myweb.navi.support.ValidateUser;
+import com.myweb.navi.user.dto.LoginRequest;
 import com.myweb.navi.user.dto.NicknameRequest;
 import com.myweb.navi.user.dto.PasswordRequest;
 import com.myweb.navi.user.dto.SignupRequest;
@@ -46,6 +47,14 @@ public class UserService {
 		validateSignupRequest(signupRequest);
 		userMapper.insertUser(signupRequest);
 	}
+	
+	public UserResponse loginUser(LoginRequest loginRequest) {
+		UserResponse userResponse = userMapper.selectUserInfoByEmail(loginRequest.getEmail());
+		if(!userResponse.getPassword().equals(userResponse.getPassword())) {
+			throw new UserNotFoundException();
+		}
+		return userResponse;
+	}
 
 	// 중복체크
 	// 1. 유효성검사
@@ -65,8 +74,8 @@ public class UserService {
 
 	// 정보조회
 	// 1. 유저정보 존재유무 검사 후 정보 반환
-	public UserResponse findUserInfoById(Long id) {
-		UserResponse userResponse = userMapper.selectUserInfoById(id);
+	public UserResponse findUserInfoByEmail(String email) {
+		UserResponse userResponse = userMapper.selectUserInfoByEmail(email);
 		if (userResponse == null) {
 			throw new UserNotFoundException();
 		}
@@ -76,27 +85,27 @@ public class UserService {
 	// 정보수정
 	// 1. 유효성 검사
 	// 2. 유저 정보 존재유무 검사
-	public void modifyPasswordById(PasswordRequest passwordRequest) {
+	public void modifyPasswordByEmail(PasswordRequest passwordRequest) {
 		validateField("password", passwordRequest.getPassword(), new InvalidPasswordException());
-		isUserNull(passwordRequest.getId());
-		userMapper.updatePasswordById(passwordRequest);
+		isUserNull(passwordRequest.getEmail());
+		userMapper.updatePasswordByEmail(passwordRequest);
 	}
 	
-	public void modifyNicknameById(NicknameRequest nicknameRequest) {
+	public void modifyNicknameByEmail(NicknameRequest nicknameRequest) {
 		if(!findExistEmail(nicknameRequest.getNickname()).isUnique()) {
 			throw new DuplicateEmailException();
 		}
-		isUserNull(nicknameRequest.getId());
-		userMapper.updateNicknameById(nicknameRequest);
+		isUserNull(nicknameRequest.getEmail());
+		userMapper.updateNicknameByEmail(nicknameRequest);
 	}
 
 	// 정보삭제
 	// 1. 존재하는 아이디인지 확인 후 삭제
-	public void removeUserById(Long id) {
-		if (userMapper.selectUserInfoById(id) == null) {
+	public void removeUserByEmail(String email) {
+		if (userMapper.selectUserInfoByEmail(email) == null) {
 			throw new UserNotFoundException();
 		}
-		userMapper.deleteUserById(id);
+		userMapper.deleteUserByEmail(email);
 	}
 
 	/**
@@ -128,8 +137,8 @@ public class UserService {
 	}
 	
 	// 유저 정보 존재유무 검사
-	private void isUserNull(Long id) {
-		UserResponse userResponse = userMapper.selectUserInfoById(id);
+	private void isUserNull(String email) {
+		UserResponse userResponse = userMapper.selectUserInfoByEmail(email);
 		if (userResponse == null) {
 			throw new UserNotFoundException();
 		}

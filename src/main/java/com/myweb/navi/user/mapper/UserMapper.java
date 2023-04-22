@@ -25,16 +25,16 @@ public interface UserMapper {
 	@Select("SELECT nickname FROM user WHERE nickname=#{nickname}")
 	String selectNickname(@Param("nickname") String nickname);
 	
-	@Select("SELECT * FROM user WHERE id=#{id}")
-	UserResponse selectUserInfoById(Long id);
+	@Select("SELECT * FROM user WHERE email=#{email}")
+	UserResponse selectUserInfoByEmail(String email);
 	
-	@Update("UPDATE user SET password=#{password} WHERE id=#{id}")
-	void updatePasswordById(PasswordRequest passwordRequest);
+	@Update("UPDATE user SET password=#{password} WHERE email=#{email}")
+	void updatePasswordByEmail(PasswordRequest passwordRequest);
 	
-	@Update("UPDATE user SET nickname=#{nickname} WHERE id=#{id}")
-	void updateNicknameById(NicknameRequest nicknameRequest);
+	@Update("UPDATE user SET nickname=#{nickname} WHERE email=#{email}")
+	void updateNicknameByEmail(NicknameRequest nicknameRequest);
 	
-	@Delete("DELETE FROM user WHERE id=#{id}")
-	void deleteUserById(Long id);
+	@Delete("DELETE FROM user WHERE email=#{email}")
+	void deleteUserByEmail(String email);
 	
 }

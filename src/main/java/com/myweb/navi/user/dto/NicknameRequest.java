@@ -5,14 +5,14 @@ import lombok.Getter;
 @Getter
 public class NicknameRequest {
 	
-	private Long id;
+	private String email;
 	private String nickname;
 	
 	public NicknameRequest() {
 	}
 	
-	public NicknameRequest(Long id, String nickname) {
-		this.id = id;
+	public NicknameRequest(String email, String nickname) {
+		this.email = email;
 		this.nickname = nickname;
 	}
 	
