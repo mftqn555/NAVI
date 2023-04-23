@@ -125,7 +125,7 @@ public class UserService {
 			throw exception;
 		}
 	}
-	
+
 	private void validateSignupRequest(SignupRequest signupRequest) {
 		validateField("password", signupRequest.getPassword(), new InvalidPasswordException());
 		if(!findExistEmail(signupRequest.getEmail()).isUnique()) {

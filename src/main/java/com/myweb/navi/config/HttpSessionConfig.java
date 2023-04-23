@@ -1,9 +1,9 @@
 package com.myweb.navi.config;
 
-import org.springframework.context.annotation.Configuration;
-import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
+//import org.springframework.context.annotation.Configuration;
+//import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 
-@Configuration
-@EnableRedisHttpSession(maxInactiveIntervalInSeconds = 1800)
+//@Configuration
+//@EnableRedisHttpSession(maxInactiveIntervalInSeconds = 1800)
 public class HttpSessionConfig {
 }
