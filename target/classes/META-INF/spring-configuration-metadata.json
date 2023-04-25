@@ -1,0 +1,21 @@
+{
+  "groups": [],
+  "properties": [
+    {
+      "name": "cloud.aws.credential.access-key",
+      "type": "java.lang.String",
+      "description": "A description for 'cloud.aws.credential.access-key'"
+    },
+    {
+      "name": "cloud.aws.credential.secret-key",
+      "type": "java.lang.String",
+      "description": "A description for 'cloud.aws.credential.secret-key'"
+    },
+    {
+      "name": "cloud.aws.s3.bucket",
+      "type": "java.lang.String",
+      "description": "A description for 'cloud.aws.s3.bucket'"
+    }
+  ],
+  "hints": []
+}

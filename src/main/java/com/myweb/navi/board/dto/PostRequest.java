@@ -1,11 +1,13 @@
 package com.myweb.navi.board.dto;
 
 import lombok.Getter;
+import lombok.ToString;
 
 @Getter
+@ToString
 public class PostRequest {
 	
-	private Long id;
+	private Long user_id;
 	private String title;
 	private String content;
 	private String nickname;
@@ -14,9 +16,8 @@ public class PostRequest {
 	public PostRequest() {
 	}
 	
-	public PostRequest(Long id, String title, String content, String nickname,
-			String image_url) {
-		this.id = id;
+	public PostRequest(Long user_id, String title, String content, String nickname, String image_url) {
+		this.user_id = user_id;
 		this.title = title;
 		this.content = content;
 		this.nickname = nickname;

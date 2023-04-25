@@ -1,5 +1,6 @@
 package com.myweb.navi.board.service;
 
+import java.util.List;
 import java.util.Set;
 
 import javax.validation.ConstraintViolation;
@@ -20,7 +21,7 @@ import com.myweb.navi.support.ValidateBoard;
 
 @Service
 public class BoardService {
-
+	
 	private final BoardMapper boardMapper;
 	private final ValidatorFactory factory;
 	
@@ -43,16 +44,22 @@ public class BoardService {
 	}
 	
 	public void removeBoard(Long bno) {
-		BoardResponse boardResponse = boardMapper.selectBoardInfoByBno(bno);
-		if(boardResponse == null || bno == null) {
-			throw new BoardNotFoundException();
-		}
+		findBoardByBno(bno);
 		boardMapper.deleteBoardByBno(bno);
 	}
 	
+	public Long findBoardCount() {
+		return boardMapper.selectBoardCount();
+	}
+	
+	public List<BoardResponse> findBoardList(Long page_number, Long page_size) {
+		List<BoardResponse> boardList = boardMapper.selectBoardList(page_number, page_size);
+		return boardList;
+	}
 	
 	public void modifyBoardByBno(BoardUpdateRequest boardUpdateRequest) {
 		validateBoard(boardUpdateRequest.getTitle(), boardUpdateRequest.getContent());
+		findBoardByBno(boardUpdateRequest.getBno());
 		boardMapper.updateBoard(boardUpdateRequest);
 	}
 	

@@ -34,9 +34,9 @@ public class BoardControllerTest {
 	@DisplayName("글 쓰기 요청")
 	void 글쓰기() throws Exception {
 		Map<String, String> input = new HashMap<>();
-		input.put("id", "1");
-		input.put("title", "테스트 제목");
-		input.put("content", "테스트 내용");
+		input.put("user_id", "1");
+		input.put("title", "테스트 제목12");
+		input.put("content", "테스트 내용12");
 		input.put("nickname", "1bsc");
 		input.put("image_url", "test_url");
 
@@ -51,7 +51,7 @@ public class BoardControllerTest {
 	@DisplayName("글 수정 요청")
 	void 글수정() throws Exception {
 		Map<String, String> input = new HashMap<>();
-		input.put("bno", "1");
+		input.put("bno", "3");
 		input.put("title", "수정된 제목");
 		input.put("content", "수정된 테스트 내용");
 		input.put("nickname", "1bsc");
@@ -66,7 +66,7 @@ public class BoardControllerTest {
 	@Test
 	@DisplayName("글 조회하기")
 	void 글조회() throws Exception {
-		this.mockmvc.perform(get("/boards/1").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+		this.mockmvc.perform(get("/boards/3").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andDo(print());
 	}
 	
@@ -75,7 +75,7 @@ public class BoardControllerTest {
 	@DisplayName("글 삭제 요청")
 	void 글삭제() throws Exception {
 		this.mockmvc
-			.perform(post("/boards/delete/1")
+			.perform(post("/boards/delete/3")
 			.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isNoContent())
 			.andDo(print());

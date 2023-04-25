@@ -3,3 +3,4 @@ logs/
 application-oauth.properties
 application.properties
 target/classes/META-INF/maven/com.myweb/NAVI/pom.properties
+게시판.txt

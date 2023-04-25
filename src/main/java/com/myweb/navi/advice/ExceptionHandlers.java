@@ -6,14 +6,12 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 @RestControllerAdvice
 public class ExceptionHandlers {
-	
-	// 오류의 갯수가 다수일경우 
-	//	다수의 메세지중 랜덤으로 첫번째에 할당된 fieldError의 defaultMessage의 메세지만 출력됨
-	//  - 검증기능 자체엔 문제없음, 에러메세지가 랜덤으로 나오는 대로 프론트에서 경고메세지 출력하면 될듯함
-	
+
+	// 컨트롤러에서 검사시 넘어오는 예외들
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<ErrorResponse> handleMethodArgumentException(BindingResult bindingResult) {
 		String errorMessage = bindingResult.getFieldErrors()
@@ -22,6 +20,12 @@ public class ExceptionHandlers {
        return ResponseEntity.badRequest().body(new ErrorResponse(errorMessage));
 	}
 	
+	@ExceptionHandler(MaxUploadSizeExceededException.class)
+	public ResponseEntity<ErrorResponse> handleMaxUploadSizeExceededException(MaxUploadSizeExceededException e) {
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse("파일의 용량이 초과되었습니다"));
+	}
+	
+	// 서비스에서 검사시 넘어오는 예외들
 	@ExceptionHandler(BadRequestException.class)
     public ResponseEntity<ErrorResponse> handleBadRequestException(BadRequestException e) {
         return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
@@ -30,6 +34,11 @@ public class ExceptionHandlers {
 	@ExceptionHandler(NotFoundException.class)
 	public ResponseEntity<ErrorResponse> handleNotFoundException(NotFoundException e) {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(e.getMessage()));
+	}
+	
+	@ExceptionHandler
+	public ResponseEntity<ErrorResponse> handleRuntimeException(RuntimeException e) {
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("알 수 없는 오류가 발생했습니다"));
 	}
 
 }
