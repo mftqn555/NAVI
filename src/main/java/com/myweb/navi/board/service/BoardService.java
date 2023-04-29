@@ -1,6 +1,8 @@
 package com.myweb.navi.board.service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.validation.ConstraintViolation;
@@ -17,6 +19,7 @@ import com.myweb.navi.board.exception.BoardNotFoundException;
 import com.myweb.navi.board.exception.InvalidContentException;
 import com.myweb.navi.board.exception.InvalidTitleException;
 import com.myweb.navi.board.mapper.BoardMapper;
+import com.myweb.navi.support.Pagination;
 import com.myweb.navi.support.ValidateBoard;
 
 @Service
@@ -48,19 +51,38 @@ public class BoardService {
 		boardMapper.deleteBoardByBno(bno);
 	}
 	
-	public Long findBoardCount() {
-		return boardMapper.selectBoardCount();
-	}
-	
-	public List<BoardResponse> findBoardList(Long page_number, Long page_size) {
-		List<BoardResponse> boardList = boardMapper.selectBoardList(page_number, page_size);
-		return boardList;
+	public Map<String, Object> findBoardListWithPagination(Integer currentPage, Integer postsPerPage) {
+	    List<BoardResponse> boardList = findBoardList(currentPage, postsPerPage);
+	    Pagination pagination = findPagination(currentPage, postsPerPage);
+
+	    Map<String, Object> response = new HashMap<>();
+	    response.put("boardList", boardList);
+	    response.put("pagination", pagination.getPageInfo());
+	    return response;
 	}
 	
 	public void modifyBoardByBno(BoardUpdateRequest boardUpdateRequest) {
 		validateBoard(boardUpdateRequest.getTitle(), boardUpdateRequest.getContent());
 		findBoardByBno(boardUpdateRequest.getBno());
 		boardMapper.updateBoard(boardUpdateRequest);
+	}
+	
+	private List<BoardResponse> findBoardList(Integer currentPage, Integer postsPerPage) {
+	    Integer offset = (currentPage - 1) * postsPerPage;
+	    return boardMapper.selectBoardList(offset, postsPerPage);
+	}
+	
+	private Pagination findPagination(Integer currentPage, Integer postsPerPage) {
+	    Integer totalPosts = findBoardCount();
+	    return Pagination.builder()
+	            .currentPage(currentPage)
+	            .postsPerPage(postsPerPage)
+	            .totalPosts(totalPosts)
+	            .build();
+	}
+	
+	private int findBoardCount() {
+		return boardMapper.selectBoardCount();
 	}
 	
 	private void validateBoard(String title, String content) {

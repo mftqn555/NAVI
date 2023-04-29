@@ -1,11 +1,13 @@
 package com.myweb.navi.user.dto;
 
+import java.io.Serializable;
+
 import lombok.Getter;
 import lombok.ToString;
 
 @Getter
 @ToString
-public class UserResponse {
+public class UserResponse implements Serializable {
 
 	private Long id;
 	private String email;

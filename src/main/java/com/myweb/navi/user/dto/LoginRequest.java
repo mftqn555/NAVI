@@ -1,5 +1,6 @@
 package com.myweb.navi.user.dto;
 
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
@@ -11,6 +12,7 @@ public class LoginRequest {
 	public LoginRequest() {
 	}
 	
+	@Builder
 	public LoginRequest(String email, String password) {
 		this.email = email;
 		this.password = password;

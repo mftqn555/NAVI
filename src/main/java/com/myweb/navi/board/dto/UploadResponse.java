@@ -1,4 +1,4 @@
-package com.myweb.navi.file.dto;
+package com.myweb.navi.board.dto;
 
 import lombok.Builder;
 import lombok.Getter;

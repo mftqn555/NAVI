@@ -1,19 +1,23 @@
 package com.myweb.navi.user.dto;
 
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 public class PasswordRequest {
 	
 	private String email;
-	private String password;
+	private String oldPassword;
+	private String newPassword;
 	
 	public PasswordRequest() {
 	}
-
-	public PasswordRequest(String email, String password) {
+	
+	@Builder
+	public PasswordRequest(String email, String oldPassword, String newPassword) {
 		this.email = email;
-		this.password = password;
+		this.oldPassword = oldPassword;
+		this.newPassword = newPassword;
 	}
 	
 }

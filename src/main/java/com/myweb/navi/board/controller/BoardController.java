@@ -1,6 +1,7 @@
 package com.myweb.navi.board.controller;
 
-import java.util.List;
+import java.io.IOException;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,36 +10,56 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.myweb.navi.board.dto.BoardResponse;
 import com.myweb.navi.board.dto.BoardUpdateRequest;
 import com.myweb.navi.board.dto.PostRequest;
+import com.myweb.navi.board.dto.UploadResponse;
 import com.myweb.navi.board.service.BoardService;
+import com.myweb.navi.support.S3Uploader;
 
 @RestController
 @RequestMapping("/boards")
 public class BoardController {
 	
 	private final BoardService boardService;
+	private final S3Uploader s3Uploader;
 	
-	public BoardController(BoardService boardService) {
+	public BoardController(BoardService boardService, S3Uploader s3Uploader) {
 		this.boardService = boardService;
+		this.s3Uploader = s3Uploader;
+	}
+	
+	// 파일 업로드
+	@PutMapping("/upload")
+	public ResponseEntity<?> upload(@RequestParam("file") MultipartFile file) throws IOException {
+		String url = s3Uploader.upload(file, "navi-board");
+		UploadResponse uploadResponse = UploadResponse.builder()
+				.uploaded(1)
+				.fileName(file.getOriginalFilename())
+				.url(url)
+				.build();
+		return ResponseEntity.ok(uploadResponse);
 	}
 	
 	// 게시글 쓰기
 	@PostMapping
 	public ResponseEntity<?> boardAdd(@RequestBody PostRequest postRequest) {
+		// Ckeditor에서 들어오는 HTML코드중 img 태그만 파싱해서 DB에 저장
 		boardService.addBoard(postRequest);
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 	
 	// 게시글 수정
-	@PatchMapping
-	public ResponseEntity<?> boardModify(@RequestBody BoardUpdateRequest boardUpdateRequest) {
+	@PatchMapping("/{bno}")
+	public ResponseEntity<?> boardModify(@RequestBody BoardUpdateRequest boardUpdateRequest, @PathVariable Long bno) {
+		boardUpdateRequest.setBno(bno);
 		boardService.modifyBoardByBno(boardUpdateRequest);
 		return ResponseEntity.noContent().build();
 	}
@@ -52,25 +73,16 @@ public class BoardController {
 	
 	// 게시글 전체 조회
 	@GetMapping("/list")
-	public ResponseEntity<List<BoardResponse>> boardList(@RequestParam(name = "page_number", defaultValue = "0") Long page_number, 
-			 											 @RequestParam(name = "page_size", defaultValue = "5") Long page_size){
-		Long offset = null;
-        if (page_number != null && page_size != null) {
-            offset = (page_number - 1) * page_size;
-        }
-		List<BoardResponse> boardList = boardService.findBoardList(offset, page_size);
-		return ResponseEntity.ok(boardList);
-	}
-	
-	// 게시글 전체 갯수 카운트
-	@GetMapping("/count")
-	public ResponseEntity<?> boardCount(){
-		return ResponseEntity.ok(boardService.findBoardCount());
+	public ResponseEntity<Map<String, Object>> boardList(@RequestParam(name = "currentPage", defaultValue = "1") Integer currentPage,
+														@RequestParam(name = "postsPerPage", defaultValue = "5") Integer postsPerPage) {
+		Map<String, Object> response = boardService.findBoardListWithPagination(currentPage, postsPerPage);
+		return ResponseEntity.ok(response);
 	}
 	
 	// 게시글 삭제
 	@DeleteMapping("/{bno}")
 	public ResponseEntity<?> boardRemove(@PathVariable Long bno) {
+		// 글 삭제시 bno로 img조회 후 해당 링크에 해당하는 파일들 삭제후 DB에서 게시글 삭제
 		boardService.removeBoard(bno);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}

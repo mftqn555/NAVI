@@ -4,20 +4,18 @@ import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-public class SignupRequest {
-	
+public class DeleteUserRequest {
+
 	private String email;
 	private String password;
-	private String nickname;
 	
-	public SignupRequest() {
+	public DeleteUserRequest() {
 	}
 	
 	@Builder
-	public SignupRequest(String email, String password, String nickname) {
+	public DeleteUserRequest(String email, String password) {
 		this.email = email;
 		this.password = password;
-		this.nickname = nickname;
 	}
-
+	
 }

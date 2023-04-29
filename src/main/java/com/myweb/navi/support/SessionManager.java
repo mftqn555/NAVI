@@ -1,6 +1,10 @@
 package com.myweb.navi.support;
 
-import java.util.Arrays;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.UUID;
 
 import javax.servlet.http.Cookie;
@@ -17,49 +21,77 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Component
 public class SessionManager {
-	
-	public void createSession(Object value, HttpServletResponse response, HttpSession session) {
-		// UUID를 통해 랜덤한 세션 ID 생성 후 세션(Redis)에 저장
+
+	public void createSession(Object obj, HttpServletResponse response, HttpSession session) {
 		String sessionId = UUID.randomUUID().toString();
-		session.setAttribute(sessionId, value);
-		// 브라우저에 UUID값을 value로 갖는 쿠키 전송
+		byte[] serializedObj = serialize(obj);
+		session.setAttribute(sessionId, serializedObj);
+		
 		Cookie cookie = new Cookie(SessionConst.sessionId, sessionId);
 		cookie.setHttpOnly(true);
 		cookie.setSecure(true);
-		cookie.setMaxAge(3600);
+		cookie.setPath("/");
 		response.addCookie(cookie);
 		log.info("쿠키값 {}", cookie.getValue());
 	}
-	
+
 	public Object getSession(HttpServletRequest request, HttpSession session) {
-		// request에서 SessionConst.sessionId에 해당하는 쿠키 찾기
+
 		Cookie cookie = findCookie(request, SessionConst.sessionId);
-		if(cookie == null) {
+		if (cookie == null) {
 			throw new UserNotFoundException();
 		}
-		// 쿠키의 값(UUID)에 해당하는 세션 찾은 후 리턴
-		return session.getAttribute(cookie.getValue());
+
+		return deserialize((byte[]) session.getAttribute(cookie.getValue()));
 	}
-	
-	public void expire(HttpServletRequest request, HttpSession session) {
-		// 로그인 쿠키정보가 있는지 확인
+
+	public void expire(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
 		Cookie cookie = findCookie(request, SessionConst.sessionId);
-		if(cookie != null) {
-			// 로그인 쿠키정보가 세션 및 쿠키 삭제
+		if (cookie != null) {
 			session.removeAttribute(cookie.getValue());
+			cookie.setHttpOnly(true);
+			cookie.setSecure(true);
+			cookie.setPath("/");
 			cookie.setMaxAge(0);
+			cookie.setValue(null);
+			response.addCookie(cookie);
+			log.info("쿠키 삭제됨");
+		}
+	}
+
+	public Cookie findCookie(HttpServletRequest request, String cookieName) {
+		if (request.getCookies() == null) {
+			return null;
+		}
+		
+		for(Cookie cookie : request.getCookies()) {
+			if(cookie.getName().equals(cookieName)) {
+				log.info(cookie.getName());
+				log.info(cookie.getValue());
+				return cookie;
+			}
+		}
+		return null;
+	}
+
+	private byte[] serialize(Object obj) {
+		try {
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			ObjectOutputStream oos = new ObjectOutputStream(bos);
+			oos.writeObject(obj);
+			oos.flush();
+			return bos.toByteArray();
+		} catch (IOException e) {
+			throw new RuntimeException();
 		}
 	}
 	
-	public Cookie findCookie(HttpServletRequest request, String cookieName) {
-        if (request.getCookies() == null) {
-            return null;
+	private Object deserialize(byte[] data) {
+        try {
+            return new ObjectInputStream(new ByteArrayInputStream(data)).readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException();
         }
-
-        return Arrays.stream(request.getCookies())
-                .filter(c -> c.getName().equals(cookieName))
-                .findAny()
-                .orElse(null);
     }
-	
+
 }

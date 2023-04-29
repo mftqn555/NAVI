@@ -22,7 +22,7 @@ public class ExceptionHandlers {
 	
 	@ExceptionHandler(MaxUploadSizeExceededException.class)
 	public ResponseEntity<ErrorResponse> handleMaxUploadSizeExceededException(MaxUploadSizeExceededException e) {
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse("파일의 용량이 초과되었습니다"));
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("파일의 용량이 초과되었습니다"));
 	}
 	
 	// 서비스에서 검사시 넘어오는 예외들
@@ -36,7 +36,7 @@ public class ExceptionHandlers {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(e.getMessage()));
 	}
 	
-	@ExceptionHandler
+	//@ExceptionHandler
 	public ResponseEntity<ErrorResponse> handleRuntimeException(RuntimeException e) {
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("알 수 없는 오류가 발생했습니다"));
 	}
