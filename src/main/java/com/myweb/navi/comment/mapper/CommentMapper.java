@@ -27,13 +27,13 @@ public interface CommentMapper {
 	void insertComment(CommentRequest commentRequest);
 
 	// 댓글 조회
-	@Select("SELECT cno, bno, user_id, nickname, content, create_date, " + 
+	@Select("SELECT cno, bno, user_id, nickname, content, DATE_FORMAT(create_date, '%y.%m.%d. %H:%i') as create_date, " + 
 			"IF(re_cno IS NULL, cno, re_cno) AS re_cno " +
 	        "FROM comment " +
 	        "WHERE bno = #{bno} " +
 	        "ORDER BY re_cno asc " +
-	        "LIMIT #{offset}, #{page_size}")
-	List<CommentResponse> selectCommentList(Long bno, Long offset, Long page_size);
+	        "LIMIT #{offset}, #{postsPerPage}")
+	List<CommentResponse> selectCommentList(Long bno, Integer offset, Integer postsPerPage);
 	
 	// 댓글 번호로 조회
 	@Select("SELECT * FROM comment WHERE cno=#{cno}")
@@ -41,7 +41,7 @@ public interface CommentMapper {
 	
 	// 댓글 카운팅
 	@Select("SELECT COUNT(*) FROM comment WHERE bno=#{bno}")
-	Long selectCommentCountByBno(Long bno);
+	int selectCommentCountByBno(Long bno);
 	
 	// 댓글 삭제
 	@Delete("DELETE FROM comment WHERE cno=#{cno}")

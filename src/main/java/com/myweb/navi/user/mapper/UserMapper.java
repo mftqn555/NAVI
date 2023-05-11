@@ -26,8 +26,14 @@ public interface UserMapper {
 	@Select("SELECT nickname FROM user WHERE nickname=#{nickname}")
 	String selectNickname(@Param("nickname") String nickname);
 	
+	@Select("SELECT password FROM user WHERE email=#{email}")
+	String selectPassword(@Param("email") String email);
+	
 	@Select("SELECT * FROM user WHERE email=#{email}")
 	UserResponse selectUserInfoByEmail(String email);
+	
+	@Select("SELECT * FROM user WHERE nickname=#{nickname}")
+	UserResponse selectUserInfoByNickname(String nickname);
 	
 	@Update("UPDATE user SET password=#{newPassword} WHERE email=#{email} and password=#{oldPassword}")
 	int updatePasswordByUserInfo(PasswordRequest passwordRequest);

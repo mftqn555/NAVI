@@ -1,6 +1,7 @@
 package com.myweb.navi.board.controller;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
@@ -10,7 +11,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -37,8 +37,8 @@ public class BoardController {
 	}
 	
 	// 파일 업로드
-	@PutMapping("/upload")
-	public ResponseEntity<?> upload(@RequestParam("file") MultipartFile file) throws IOException {
+	@PostMapping("/upload")
+	public ResponseEntity<?> upload(@RequestParam("upload") MultipartFile file) throws IOException {
 		String url = s3Uploader.upload(file, "navi-board");
 		UploadResponse uploadResponse = UploadResponse.builder()
 				.uploaded(1)
@@ -71,18 +71,33 @@ public class BoardController {
 		return ResponseEntity.ok(boardResponse);
 	}
 	
+	// 게시글 조회수 증가
+	@PostMapping("/{bno}/view")
+	public ResponseEntity<?> viewCountAdd(@PathVariable Long bno) {
+		boardService.addViewCount(bno);
+		return ResponseEntity.ok().build();
+	}
+	
 	// 게시글 전체 조회
 	@GetMapping("/list")
 	public ResponseEntity<Map<String, Object>> boardList(@RequestParam(name = "currentPage", defaultValue = "1") Integer currentPage,
-														@RequestParam(name = "postsPerPage", defaultValue = "5") Integer postsPerPage) {
-		Map<String, Object> response = boardService.findBoardListWithPagination(currentPage, postsPerPage);
+														@RequestParam(name = "postsPerPage", defaultValue = "5") Integer postsPerPage,
+														@RequestParam(name = "category", defaultValue = "title") String category,
+														@RequestParam(name = "search", defaultValue = "") String search) {
+		Map<String, Object> response = boardService.findBoardListWithPagination(currentPage, postsPerPage, category, search);
 		return ResponseEntity.ok(response);
+	}
+	
+	// 공지사항 조회
+	@GetMapping("/notice")
+	public ResponseEntity<List<BoardResponse>> noticeList() {
+		return ResponseEntity.ok(boardService.findNoticeList());
 	}
 	
 	// 게시글 삭제
 	@DeleteMapping("/{bno}")
 	public ResponseEntity<?> boardRemove(@PathVariable Long bno) {
-		// 글 삭제시 bno로 img조회 후 해당 링크에 해당하는 파일들 삭제후 DB에서 게시글 삭제
+		// 글 삭제시 bno로 img조회 후 해당 링크에 해당하는 파일들 삭제후 DB에서 게시글 삭제(추가해야됨)
 		boardService.removeBoard(bno);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}

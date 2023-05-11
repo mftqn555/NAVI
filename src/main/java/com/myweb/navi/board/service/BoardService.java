@@ -12,6 +12,7 @@ import javax.validation.ValidatorFactory;
 import org.springframework.stereotype.Service;
 
 import com.myweb.navi.advice.BusinessException;
+import com.myweb.navi.board.dto.BoardListResponse;
 import com.myweb.navi.board.dto.BoardResponse;
 import com.myweb.navi.board.dto.BoardUpdateRequest;
 import com.myweb.navi.board.dto.PostRequest;
@@ -51,9 +52,19 @@ public class BoardService {
 		boardMapper.deleteBoardByBno(bno);
 	}
 	
-	public Map<String, Object> findBoardListWithPagination(Integer currentPage, Integer postsPerPage) {
-	    List<BoardResponse> boardList = findBoardList(currentPage, postsPerPage);
-	    Pagination pagination = findPagination(currentPage, postsPerPage);
+	public void modifyBoardByBno(BoardUpdateRequest boardUpdateRequest) {
+		validateBoard(boardUpdateRequest.getTitle(), boardUpdateRequest.getContent());
+		findBoardByBno(boardUpdateRequest.getBno());
+		boardMapper.updateBoard(boardUpdateRequest);
+	}
+	
+	public List<BoardResponse> findNoticeList() {
+	    return boardMapper.selectNoticeList();
+	}
+	
+	public Map<String, Object> findBoardListWithPagination(Integer currentPage, Integer postsPerPage, String category, String search) {
+	    List<BoardListResponse> boardList = findBoardList(currentPage, postsPerPage, category, search);
+	    Pagination pagination = findPagination(currentPage, postsPerPage, category, search);
 
 	    Map<String, Object> response = new HashMap<>();
 	    response.put("boardList", boardList);
@@ -61,19 +72,17 @@ public class BoardService {
 	    return response;
 	}
 	
-	public void modifyBoardByBno(BoardUpdateRequest boardUpdateRequest) {
-		validateBoard(boardUpdateRequest.getTitle(), boardUpdateRequest.getContent());
-		findBoardByBno(boardUpdateRequest.getBno());
-		boardMapper.updateBoard(boardUpdateRequest);
+	public void addViewCount(Long bno) {
+		boardMapper.updateviewCount(bno);
 	}
 	
-	private List<BoardResponse> findBoardList(Integer currentPage, Integer postsPerPage) {
+	private List<BoardListResponse> findBoardList(Integer currentPage, Integer postsPerPage, String category, String search) {
 	    Integer offset = (currentPage - 1) * postsPerPage;
-	    return boardMapper.selectBoardList(offset, postsPerPage);
+	    return boardMapper.selectBoardList(offset, postsPerPage, category, search);
 	}
 	
-	private Pagination findPagination(Integer currentPage, Integer postsPerPage) {
-	    Integer totalPosts = findBoardCount();
+	private Pagination findPagination(Integer currentPage, Integer postsPerPage, String category, String search) {
+	    Integer totalPosts = findBoardCount(category, search);
 	    return Pagination.builder()
 	            .currentPage(currentPage)
 	            .postsPerPage(postsPerPage)
@@ -81,8 +90,8 @@ public class BoardService {
 	            .build();
 	}
 	
-	private int findBoardCount() {
-		return boardMapper.selectBoardCount();
+	private int findBoardCount(String category, String search) {
+		return boardMapper.selectBoardCount(category, search);
 	}
 	
 	private void validateBoard(String title, String content) {

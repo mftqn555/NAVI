@@ -125,10 +125,17 @@ public class BoardControllerTest {
 				.andDo(print());
 	}
 	
-	@DisplayName("페이징 정보에 따른 글 리스트 조회, 파라미터 없을시 기본값 1, 10")
+	@DisplayName("페이징 정보에 따른 글 리스트 조회, 파라미터 없을시 기본값 1, 5")
 	@Test
 	void 글리스트조회() throws Exception {
 		this.mockmvc.perform(get("/boards/list").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+				.andDo(print());
+	}
+	
+	@DisplayName("카테고리 검색 결과에 따른 글 리스트 조회, 파라미터 없을시 기본값 1, 5")
+	@Test
+	void 글검색조회() throws Exception {
+		this.mockmvc.perform(get("/boards/list?currentPage=2&category=title&search=2").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andDo(print());
 	}
 
@@ -148,6 +155,13 @@ public class BoardControllerTest {
 
 		this.mockmvc.perform(delete("/boards/999").contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound()).andDo(print());
+	}
+	
+	@DisplayName("공지사항 조회")
+	@Test
+	void 공지사항리스트조회() throws Exception {
+		this.mockmvc.perform(get("/boards/notice").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+				.andDo(print());
 	}
 
 }

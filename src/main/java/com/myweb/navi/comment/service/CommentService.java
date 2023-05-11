@@ -1,6 +1,8 @@
 package com.myweb.navi.comment.service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.validation.ConstraintViolation;
@@ -17,6 +19,7 @@ import com.myweb.navi.comment.dto.CommentUpdateRequest;
 import com.myweb.navi.comment.exception.CommentNotFoundException;
 import com.myweb.navi.comment.exception.InvalidCommentException;
 import com.myweb.navi.comment.mapper.CommentMapper;
+import com.myweb.navi.support.Pagination;
 import com.myweb.navi.support.ValidateComment;
 
 @Service
@@ -46,18 +49,6 @@ public class CommentService {
 		commentMapper.insertComment(commentRequest);
 	}
 	
-	// 댓글 리스트 조회
-	public List<CommentResponse> findCommentListByBno(Long bno, Long page_number, Long page_size) {
-		boardService.findBoardByBno(bno);
-		return commentMapper.selectCommentList(bno, page_number, page_size);
-	}
-	
-	// 댓글 카운팅
-	public Long findCommentCountByBno(Long bno) {
-		boardService.findBoardByBno(bno);
-		return commentMapper.selectCommentCountByBno(bno);
-	}
-	
 	// 댓글 수정
 	public void modifyComment(CommentUpdateRequest commentUpdateRequest) {
 		isCommentNull(commentUpdateRequest.getCno());
@@ -69,6 +60,38 @@ public class CommentService {
 	public void removeCommentByBno(Long cno) {
 		isCommentNull(cno);
 		commentMapper.deleteCommentByCno(cno);
+	}
+	
+	// 댓글 리스트 조회
+	public Map<String, Object> findCommentListWithPagination(Long bno, Integer currentPage, Integer postsPerPage) {
+		List<CommentResponse> commentList = findCommentListByBno(bno, currentPage, postsPerPage);
+		Pagination pagination = findPagination(bno, currentPage, postsPerPage);
+		
+		Map<String, Object> response = new HashMap<>();
+		response.put("pagination", pagination.getPageInfo());
+		response.put("commentList", commentList);
+		return response;
+	}
+	
+	private List<CommentResponse> findCommentListByBno(Long bno, Integer currentPage, Integer postsPerPage) {
+		boardService.findBoardByBno(bno);
+		Integer offset = (currentPage - 1) * postsPerPage;
+		return commentMapper.selectCommentList(bno, offset, postsPerPage);
+	}
+	
+	private Pagination findPagination(Long bno, Integer currentPage, Integer postsPerPage) {
+		Integer totalComments = findCommentCountByBno(bno);
+		return Pagination.builder()
+				.currentPage(currentPage)
+				.postsPerPage(postsPerPage)
+				.totalPosts(totalComments)
+				.build();
+	}
+	
+	// 댓글 카운팅
+	private int findCommentCountByBno(Long bno) {
+		boardService.findBoardByBno(bno);
+		return commentMapper.selectCommentCountByBno(bno);
 	}
 	
 	private void isCommentNull(Long cno) {

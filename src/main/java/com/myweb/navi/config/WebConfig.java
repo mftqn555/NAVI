@@ -20,7 +20,8 @@ public class WebConfig implements WebMvcConfigurer {
 
 		registry.addInterceptor(new LoginCheckInterceptor()).order(1).addPathPatterns("/**").excludePathPatterns("/",
 				"/users/signup", "/users/login", "/users/logout", "/boards/list", "/boards/count", "/boards/{bno}", "/*.ico",
-				"/comments", "/error", "/users/exist");
+				"/comments", "/error", "/users/exist", "/users/email", "/comments/{bno}", "/boards/{bno}/view", "/api/weather", "/api/location", "/api/dust",
+				"/gpt", "/api/station/keyword", "/api/station/info", "/api/bus/num", "/api/bus/location", "/api/gpt");
 	}
 
 }

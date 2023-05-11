@@ -39,7 +39,7 @@ public class CommentControllerTest {
 		input.put("bno", "11");
 		input.put("user_id", "1");
 		input.put("content", "테스트3");
-		input.put("nickname", "1bsc");
+		input.put("nickname", "xdvdffd");
 
 		this.mockmvc
 				.perform(post("/comments").contentType(MediaType.APPLICATION_JSON)
@@ -55,7 +55,7 @@ public class CommentControllerTest {
 		input.put("bno", "11");
 		input.put("user_id", "1");
 		input.put("content", "테스트3");
-		input.put("nickname", "1bsc");
+		input.put("nickname", "xdvdffd");
 		input.put("re_cno", "15");
 
 		this.mockmvc
@@ -143,7 +143,7 @@ public class CommentControllerTest {
 	void 댓글리스트조회() throws Exception {
 		
 		this.mockmvc
-				.perform(get("/comments?bno=11&page_number=1&page_size=5"))
+				.perform(get("/comments/11?currentPage=1"))
 				.andExpect(status().isOk()).andDo(print());
 	}
 	
@@ -152,18 +152,8 @@ public class CommentControllerTest {
 	void 댓글리스트조회_없는게시글() throws Exception {
 		
 		this.mockmvc
-				.perform(get("/comments?bno=999&page_number=1&page_size=5"))
+				.perform(get("/comments/999?currentPage=1&postsPerPage=5"))
 				.andExpect(status().isNotFound()).andDo(print());
-	}
-	
-	
-	@DisplayName("댓글 수 카운트")
-	@Test
-	void 댓글수카운트() throws Exception {
-		
-		this.mockmvc
-				.perform(get("/comments/count?bno=11"))
-				.andExpect(status().isOk()).andDo(print());
 	}
 	
 	@DisplayName("댓글 삭제")

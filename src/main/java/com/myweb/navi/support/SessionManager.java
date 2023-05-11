@@ -14,8 +14,6 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Component;
 
-import com.myweb.navi.user.exception.UserNotFoundException;
-
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -31,6 +29,7 @@ public class SessionManager {
 		cookie.setHttpOnly(true);
 		cookie.setSecure(true);
 		cookie.setPath("/");
+		cookie.setMaxAge(7200);
 		response.addCookie(cookie);
 		log.info("쿠키값 {}", cookie.getValue());
 	}
@@ -39,7 +38,7 @@ public class SessionManager {
 
 		Cookie cookie = findCookie(request, SessionConst.sessionId);
 		if (cookie == null) {
-			throw new UserNotFoundException();
+			log.info("쿠키값 없음");
 		}
 
 		return deserialize((byte[]) session.getAttribute(cookie.getValue()));

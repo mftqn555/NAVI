@@ -1,8 +1,6 @@
 package com.myweb.navi.comment.controller;
 
-import java.util.List;
-
-import javax.validation.Valid;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.myweb.navi.comment.dto.CommentRequest;
-import com.myweb.navi.comment.dto.CommentResponse;
 import com.myweb.navi.comment.dto.CommentUpdateRequest;
 import com.myweb.navi.comment.service.CommentService;
 
@@ -33,42 +30,32 @@ public class CommentController {
 	
 	// 댓글 쓰기
 	@PostMapping
-	public ResponseEntity<?> commentAdd(@Valid @RequestBody CommentRequest commentRequest) {
+	public ResponseEntity<?> commentAdd(@RequestBody CommentRequest commentRequest) {
 		commentService.addComment(commentRequest);
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 	
 	// 대댓글 쓰기
 	@PostMapping("/reply")
-	public ResponseEntity<?> replyAdd(@Valid @RequestBody CommentRequest commentRequest) {
+	public ResponseEntity<?> replyAdd(@RequestBody CommentRequest commentRequest) {
 		commentService.addReply(commentRequest);
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 	
 	// 댓글 수정
 	@PatchMapping
-	public ResponseEntity<?> modifyAdd(@Valid @RequestBody CommentUpdateRequest commentUpdateRequest) {
+	public ResponseEntity<?> modifyAdd(@RequestBody CommentUpdateRequest commentUpdateRequest) {
 		commentService.modifyComment(commentUpdateRequest);
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 	
 	// 댓글 리스트 조회 
-	@GetMapping
-	public ResponseEntity<List<CommentResponse>> commentList(@RequestParam(name = "bno") Long bno,
-															 @RequestParam(name = "page_number", defaultValue = "0") Long page_number, 
-															 @RequestParam(name = "page_size", defaultValue = "10") Long page_size){
-		Long offset = null;
-        if (page_number != null && page_size != null) {
-            offset = (page_number - 1) * page_size;
-        }
-		List<CommentResponse> commentList = commentService.findCommentListByBno(bno, offset, page_size);
-		return ResponseEntity.ok(commentList);
-	}
-	
-	// 댓글 수 카운트
-	@GetMapping("/count")
-	public ResponseEntity<?> commentCount(Long bno) {
-		return ResponseEntity.ok(commentService.findCommentCountByBno(bno));
+	@GetMapping("/{bno}")
+	public ResponseEntity<Map<String, Object>> commentList(@PathVariable Long bno,
+															 @RequestParam(name = "currentPage", defaultValue = "1") Integer currentPage, 
+															 @RequestParam(name = "postsPerPage", defaultValue = "10") Integer postsPerPage){
+		Map<String, Object> response = commentService.findCommentListWithPagination(bno, currentPage, postsPerPage);
+		return ResponseEntity.ok(response);
 	}
 	
 	// 댓글 삭제

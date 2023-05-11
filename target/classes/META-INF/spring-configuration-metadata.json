@@ -20,6 +20,21 @@
       "name": "cloud.aws.s3.url",
       "type": "java.lang.String",
       "description": "A description for 'cloud.aws.s3.url'"
+    },
+    {
+      "name": "openapi.chatgpt.key",
+      "type": "java.lang.String",
+      "description": "A description for 'openapi.chatgpt.key'"
+    },
+    {
+      "name": "public.api.key",
+      "type": "java.lang.String",
+      "description": "A description for 'public.api.key'"
+    },
+    {
+      "name": "weather.api.key",
+      "type": "java.lang.String",
+      "description": "A description for 'weather.api.key'"
     }
   ],
   "hints": []

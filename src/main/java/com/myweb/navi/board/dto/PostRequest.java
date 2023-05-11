@@ -12,16 +12,18 @@ public class PostRequest {
 	private String title;
 	private String content;
 	private String nickname;
+	private boolean admin;
 	
 	public PostRequest() {
 	}
-	
+
 	@Builder
-	public PostRequest(Long user_id, String title, String content, String nickname) {
+	public PostRequest(Long user_id, String title, String content, String nickname, boolean admin) {
 		this.user_id = user_id;
 		this.title = title;
 		this.content = content;
 		this.nickname = nickname;
+		this.admin = admin;
 	}
 
 }

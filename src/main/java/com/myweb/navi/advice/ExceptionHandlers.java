@@ -36,7 +36,7 @@ public class ExceptionHandlers {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(e.getMessage()));
 	}
 	
-	//@ExceptionHandler
+	@ExceptionHandler
 	public ResponseEntity<ErrorResponse> handleRuntimeException(RuntimeException e) {
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("알 수 없는 오류가 발생했습니다"));
 	}

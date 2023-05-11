@@ -2,10 +2,13 @@ package com.myweb.navi.user.service;
 
 import java.util.Set;
 
+import javax.mail.internet.MimeMessage;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import com.myweb.navi.advice.BusinessException;
@@ -25,15 +28,20 @@ import com.myweb.navi.user.exception.InvalidPasswordException;
 import com.myweb.navi.user.exception.UserNotFoundException;
 import com.myweb.navi.user.mapper.UserMapper;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 public class UserService {
 
 	private final UserMapper userMapper;
 	private final ValidatorFactory factory;
+	private final JavaMailSender javaMailSender;
 
-	public UserService(UserMapper userMapper, ValidatorFactory factory) {
+	public UserService(UserMapper userMapper, ValidatorFactory factory, JavaMailSender javaMailSender) {
 		this.userMapper = userMapper;
 		this.factory = factory;
+		this.javaMailSender = javaMailSender;
 	}
 
 	/**
@@ -81,6 +89,24 @@ public class UserService {
 			throw new UserNotFoundException();
 		}
 		return userResponse;
+	}
+	
+	public UserResponse findUserInfoByNickname(String nickname) {
+		UserResponse userResponse = userMapper.selectUserInfoByNickname(nickname);
+		if (userResponse == null) {
+			throw new UserNotFoundException();
+		}
+		return userResponse;
+	}
+	
+	
+	// 이메일 보내기
+	public void sendPasswordByEmail(String email) {
+		String password = userMapper.selectPassword(email);
+		if(password == null) {
+			throw new UserNotFoundException();
+		}
+		sendMail(email, password);
 	}
 
 	// 정보수정
@@ -150,5 +176,36 @@ public class UserService {
 		}
 		return false;
 	}
+	
+	private void sendMail(String email, String password) {
+		
+		MimeMessage message = javaMailSender.createMimeMessage();
 
+	    try{
+	        MimeMessageHelper messageHelper = new MimeMessageHelper(message, true, "UTF-8");
+	        
+	        messageHelper.setFrom("mftqn555@gmail.com", "NAVI");
+	        messageHelper.setTo(email);
+	        messageHelper.setSubject("[NAVI] 가입하신 계정의 정보입니다");
+
+	        StringBuilder sb = new StringBuilder();
+	        sb.append(" <p>회원님의 비밀번호는 다음과 같습니다</p>\n");
+	        sb.append(" <p><strong>비밀번호: ");
+	        sb.append(password);
+	        sb.append(" </strong></p>\n");
+	        sb.append(" <p>로그인 후 반드시 비밀번호를 변경하시기 바랍니다.</p>\n");
+	        sb.append(" <br>\n");
+	        sb.append(" <p>감사합니다.</p>\n");
+
+	        String emailContent = sb.toString();
+	        messageHelper.setText(emailContent,true);
+
+	        javaMailSender.send(message);
+	    } catch(Exception e){
+	    	log.info("메일 보내는 중 오류 발생 {}", e);
+	    }
+		
+	}
+
+	
 }

@@ -58,10 +58,24 @@ public class UserController {
 	}
 	
 	// 유저 정보 조회
-	@PostMapping(value = "/info")
-	public ResponseEntity<UserResponse> userDetails(@RequestBody String email) {
+	@GetMapping(value = "/info", params = "email")
+	public ResponseEntity<UserResponse> emailUserInfo(@RequestParam String email) {
 		UserResponse userResponse = userService.findUserInfoByEmail(email);
 		return ResponseEntity.ok().body(userResponse);
+	}
+	
+	@GetMapping(value = "/info", params = "nickname")
+	public ResponseEntity<UserResponse> nicknameUserInfo(@RequestParam String nickname) {
+		UserResponse userResponse = userService.findUserInfoByNickname(nickname);
+		return ResponseEntity.ok().body(userResponse);
+	}
+	
+	
+	// 이메일 보내기
+	@GetMapping(value = "/email", params = "email")
+	public ResponseEntity<?> passwordFind(@RequestParam String email) {
+		userService.sendPasswordByEmail(email);
+		return ResponseEntity.ok().build();
 	}
 	
 	// 닉네임, 비밀번호 수정
@@ -80,6 +94,8 @@ public class UserController {
 	// 회원 탈퇴
 	@DeleteMapping
 	public ResponseEntity<?> userRemove(@RequestBody DeleteUserRequest deleteUserRequest) {
+		System.out.println(deleteUserRequest.getEmail());
+		System.out.println(deleteUserRequest.getPassword());
 		userService.removeUserByEmail(deleteUserRequest);
 		return ResponseEntity.noContent().build();
 	}
@@ -93,17 +109,15 @@ public class UserController {
 	}
 	
 	// 로그아웃
-	@PostMapping("/logout")
+	@GetMapping("/logout")
 	public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
 		sessionManager.expire(request, response, session);
 		return ResponseEntity.ok().build();
 	}
 	
 	// 테스트 링크
-	@PostMapping("/login/test")
-	public ResponseEntity<?> loginTest(HttpServletRequest request, HttpSession session) {
-		UserResponse user = (UserResponse) sessionManager.getSession(request, session);
-		System.out.println(user.toString());
+	@GetMapping("/check")
+	public ResponseEntity<?> loginTest() {
         return ResponseEntity.ok().build();
 	}
 
