@@ -46,7 +46,7 @@ public class CommentControllerTest {
 						.content(objectMapper.writeValueAsString(input)).contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isCreated()).andDo(print());
 	}
-	
+
 	@DisplayName("대댓글 쓰기 요청")
 	@Test
 	@Transactional
@@ -63,7 +63,7 @@ public class CommentControllerTest {
 						.content(objectMapper.writeValueAsString(input)).contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isCreated()).andDo(print());
 	}
-	
+
 	@DisplayName("내용 빈칸시 400 오류메세지 반환")
 	@Test
 	@Transactional
@@ -79,7 +79,7 @@ public class CommentControllerTest {
 						.content(objectMapper.writeValueAsString(input)).contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isBadRequest()).andDo(print());
 	}
-	
+
 	@DisplayName("나머지 요소들 잘못되었을 시 500 메세지 반환")
 	@Test
 	@Transactional
@@ -95,7 +95,7 @@ public class CommentControllerTest {
 						.content(objectMapper.writeValueAsString(input)).contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().is5xxServerError()).andDo(print());
 	}
-	
+
 	@DisplayName("댓글 수정 요청")
 	@Test
 	@Transactional
@@ -109,7 +109,7 @@ public class CommentControllerTest {
 						.content(objectMapper.writeValueAsString(input)).contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isCreated()).andDo(print());
 	}
-	
+
 	@DisplayName("내용 빈칸으로 수정 요청시 400 오류메세지 반환")
 	@Test
 	@Transactional
@@ -123,7 +123,7 @@ public class CommentControllerTest {
 						.content(objectMapper.writeValueAsString(input)).contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isBadRequest()).andDo(print());
 	}
-	
+
 	@DisplayName("수정 요청했는데 댓글 없을시 요청시 400 오류메세지 반환")
 	@Test
 	@Transactional
@@ -137,43 +137,36 @@ public class CommentControllerTest {
 						.content(objectMapper.writeValueAsString(input)).contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound()).andDo(print());
 	}
-	
+
 	@DisplayName("댓글 리스트 조회 요청")
 	@Test
 	void 댓글리스트조회() throws Exception {
-		
-		this.mockmvc
-				.perform(get("/comments/11?currentPage=1"))
-				.andExpect(status().isOk()).andDo(print());
+
+		this.mockmvc.perform(get("/comments/11?currentPage=1")).andExpect(status().isOk()).andDo(print());
 	}
-	
+
 	@DisplayName("없는 댓글 리스트 조회 요청시 400 오류메세지 반환")
 	@Test
 	void 댓글리스트조회_없는게시글() throws Exception {
-		
-		this.mockmvc
-				.perform(get("/comments/999?currentPage=1&postsPerPage=5"))
-				.andExpect(status().isNotFound()).andDo(print());
+
+		this.mockmvc.perform(get("/comments/999?currentPage=1&postsPerPage=5")).andExpect(status().isNotFound())
+				.andDo(print());
 	}
-	
+
 	@DisplayName("댓글 삭제")
 	@Test
 	@Transactional
 	void 댓글삭제() throws Exception {
-		
-		this.mockmvc
-				.perform(delete(("/comments/14")))
-				.andExpect(status().isNoContent()).andDo(print());
+
+		this.mockmvc.perform(delete(("/comments/14"))).andExpect(status().isNoContent()).andDo(print());
 	}
-	
+
 	@DisplayName("없는 댓글 삭제요청시 400 오류메세지 반환")
 	@Test
 	@Transactional
 	void 댓글삭제_없는댓글삭제요청() throws Exception {
-		
-		this.mockmvc
-				.perform(delete(("/comments/999")))
-				.andExpect(status().isNotFound()).andDo(print());
+
+		this.mockmvc.perform(delete(("/comments/999"))).andExpect(status().isNotFound()).andDo(print());
 	}
 
 }

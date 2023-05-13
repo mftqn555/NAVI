@@ -44,10 +44,6 @@ public class UserService {
 		this.javaMailSender = javaMailSender;
 	}
 
-	/**
-	 * API
-	 */
-
 	// 회원가입
 	// 1. 유효성검사
 	// 2. 이메일 중복검사(유효성 검사 포함)
@@ -56,10 +52,10 @@ public class UserService {
 		validateSignupRequest(signupRequest);
 		userMapper.insertUser(signupRequest);
 	}
-	
+
 	public UserResponse loginUser(LoginRequest loginRequest) {
 		UserResponse userResponse = userMapper.selectUserInfoByEmail(loginRequest.getEmail());
-		if(userResponse == null || !userResponse.getPassword().equals(loginRequest.getPassword())) {
+		if (userResponse == null || !userResponse.getPassword().equals(loginRequest.getPassword())) {
 			throw new UserNotFoundException();
 		}
 		return userResponse;
@@ -90,7 +86,7 @@ public class UserService {
 		}
 		return userResponse;
 	}
-	
+
 	public UserResponse findUserInfoByNickname(String nickname) {
 		UserResponse userResponse = userMapper.selectUserInfoByNickname(nickname);
 		if (userResponse == null) {
@@ -98,12 +94,11 @@ public class UserService {
 		}
 		return userResponse;
 	}
-	
-	
+
 	// 이메일 보내기
 	public void sendPasswordByEmail(String email) {
 		String password = userMapper.selectPassword(email);
-		if(password == null) {
+		if (password == null) {
 			throw new UserNotFoundException();
 		}
 		sendMail(email, password);
@@ -114,16 +109,16 @@ public class UserService {
 	// 2. 유저 정보 존재유무 검사
 	public void modifyPasswordByUserInfo(PasswordRequest passwordRequest) {
 		validatePasswordRequest(passwordRequest);
-		if(userMapper.updatePasswordByUserInfo(passwordRequest) != 1) {
+		if (userMapper.updatePasswordByUserInfo(passwordRequest) != 1) {
 			throw new UserNotFoundException();
 		}
 	}
-	
+
 	public void modifyNicknameByEmail(NicknameRequest nicknameRequest) {
-		if(!findExistNickname(nicknameRequest.getNickname()).isUnique()) {
+		if (!findExistNickname(nicknameRequest.getNickname()).isUnique()) {
 			throw new DuplicateNicknameException();
 		}
-		if(userMapper.updateNicknameByEmail(nicknameRequest) != 1) {
+		if (userMapper.updateNicknameByEmail(nicknameRequest) != 1) {
 			throw new UserNotFoundException();
 		}
 	}
@@ -131,15 +126,12 @@ public class UserService {
 	// 정보삭제
 	// 1. 존재하는 아이디인지 확인 후 삭제
 	public void removeUserByEmail(DeleteUserRequest deleteUserRequest) {
-		if(userMapper.deleteUserByEmail(deleteUserRequest) != 1) {
+		if (userMapper.deleteUserByEmail(deleteUserRequest) != 1) {
 			throw new UserNotFoundException();
 		}
 	}
 
-	/**
-	 * 유효성 검사용 메서드
-	 */
-	
+	// 유효성 검사
 	private Validator setUpValidator() {
 		return factory.getValidator();
 	}
@@ -156,14 +148,14 @@ public class UserService {
 
 	private void validateSignupRequest(SignupRequest signupRequest) {
 		validateField("password", signupRequest.getPassword(), new InvalidPasswordException());
-		if(!findExistEmail(signupRequest.getEmail()).isUnique()) {
+		if (!findExistEmail(signupRequest.getEmail()).isUnique()) {
 			throw new DuplicateEmailException();
 		}
-		if(!findExistNickname(signupRequest.getNickname()).isUnique()) {
+		if (!findExistNickname(signupRequest.getNickname()).isUnique()) {
 			throw new DuplicateNicknameException();
 		}
 	}
-	
+
 	private void validatePasswordRequest(PasswordRequest passwordRequest) {
 		validateField("password", passwordRequest.getNewPassword(), new InvalidPasswordException());
 		validateField("password", passwordRequest.getOldPassword(), new InvalidPasswordException());
@@ -171,41 +163,41 @@ public class UserService {
 
 	// 중복값 검사
 	private boolean isUnique(String value) {
-		if(value == null) {
+		if (value == null) {
 			return true;
 		}
 		return false;
 	}
-	
+
+	// 이메일 전송
 	private void sendMail(String email, String password) {
-		
+
 		MimeMessage message = javaMailSender.createMimeMessage();
 
-	    try{
-	        MimeMessageHelper messageHelper = new MimeMessageHelper(message, true, "UTF-8");
-	        
-	        messageHelper.setFrom("mftqn555@gmail.com", "NAVI");
-	        messageHelper.setTo(email);
-	        messageHelper.setSubject("[NAVI] 가입하신 계정의 정보입니다");
+		try {
+			MimeMessageHelper messageHelper = new MimeMessageHelper(message, true, "UTF-8");
 
-	        StringBuilder sb = new StringBuilder();
-	        sb.append(" <p>회원님의 비밀번호는 다음과 같습니다</p>\n");
-	        sb.append(" <p><strong>비밀번호: ");
-	        sb.append(password);
-	        sb.append(" </strong></p>\n");
-	        sb.append(" <p>로그인 후 반드시 비밀번호를 변경하시기 바랍니다.</p>\n");
-	        sb.append(" <br>\n");
-	        sb.append(" <p>감사합니다.</p>\n");
+			messageHelper.setFrom("mftqn555@gmail.com", "NAVI");
+			messageHelper.setTo(email);
+			messageHelper.setSubject("[NAVI] 가입하신 계정의 정보입니다");
 
-	        String emailContent = sb.toString();
-	        messageHelper.setText(emailContent,true);
+			StringBuilder sb = new StringBuilder();
+			sb.append(" <p>회원님의 비밀번호는 다음과 같습니다</p>\n");
+			sb.append(" <p><strong>비밀번호: ");
+			sb.append(password);
+			sb.append(" </strong></p>\n");
+			sb.append(" <p>로그인 후 반드시 비밀번호를 변경하시기 바랍니다.</p>\n");
+			sb.append(" <br>\n");
+			sb.append(" <p>감사합니다.</p>\n");
 
-	        javaMailSender.send(message);
-	    } catch(Exception e){
-	    	log.info("메일 보내는 중 오류 발생 {}", e);
-	    }
-		
+			String emailContent = sb.toString();
+			messageHelper.setText(emailContent, true);
+
+			javaMailSender.send(message);
+		} catch (Exception e) {
+			log.info("메일 보내는 중 오류 발생 {}", e);
+		}
+
 	}
 
-	
 }

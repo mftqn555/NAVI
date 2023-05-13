@@ -28,69 +28,68 @@ import com.myweb.navi.user.service.UserService;
 @RestController
 @RequestMapping("/users")
 public class UserController {
-	
+
 	private final UserService userService;
 	private final SessionManager sessionManager;
-	
+
 	public UserController(UserService userService, SessionManager sessionManager) {
 		this.userService = userService;
 		this.sessionManager = sessionManager;
 	}
-	
+
 	// 회원가입
 	@PostMapping("/signup")
 	public ResponseEntity<?> signup(@RequestBody SignupRequest signupRequest) {
 		userService.addUser(signupRequest);
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
-	
+
 	// 이메일, 닉네임 중복 확인
 	@GetMapping(value = "/exist", params = "email")
 	public ResponseEntity<UniqueResponse> emailCheck(@RequestParam String email) {
-		 UniqueResponse uniqueResponse = userService.findExistEmail(email);
-		 return ResponseEntity.ok().body(uniqueResponse);
+		UniqueResponse uniqueResponse = userService.findExistEmail(email);
+		return ResponseEntity.ok().body(uniqueResponse);
 	}
-	
+
 	@GetMapping(value = "/exist", params = "nickname")
 	public ResponseEntity<UniqueResponse> nicknameCheck(@RequestParam String nickname) {
 		UniqueResponse uniqueResponse = userService.findExistNickname(nickname);
 		return ResponseEntity.ok().body(uniqueResponse);
 	}
-	
+
 	// 유저 정보 조회
 	@GetMapping(value = "/info", params = "email")
 	public ResponseEntity<UserResponse> emailUserInfo(@RequestParam String email) {
 		UserResponse userResponse = userService.findUserInfoByEmail(email);
 		return ResponseEntity.ok().body(userResponse);
 	}
-	
+
 	@GetMapping(value = "/info", params = "nickname")
 	public ResponseEntity<UserResponse> nicknameUserInfo(@RequestParam String nickname) {
 		UserResponse userResponse = userService.findUserInfoByNickname(nickname);
 		return ResponseEntity.ok().body(userResponse);
 	}
-	
-	
+
 	// 이메일 보내기
 	@GetMapping(value = "/email", params = "email")
 	public ResponseEntity<?> passwordFind(@RequestParam String email) {
 		userService.sendPasswordByEmail(email);
 		return ResponseEntity.ok().build();
 	}
-	
+
 	// 닉네임, 비밀번호 수정
 	@PatchMapping(value = "/password")
 	public ResponseEntity<?> passwordModify(@RequestBody PasswordRequest passwordRequest) {
 		userService.modifyPasswordByUserInfo(passwordRequest);
 		return ResponseEntity.noContent().build();
 	}
-	
+
 	@PatchMapping(value = "/nickname")
 	public ResponseEntity<?> nicknameModify(@RequestBody NicknameRequest nicknameRequest) {
 		userService.modifyNicknameByEmail(nicknameRequest);
 		return ResponseEntity.noContent().build();
 	}
-	
+
 	// 회원 탈퇴
 	@DeleteMapping
 	public ResponseEntity<?> userRemove(@RequestBody DeleteUserRequest deleteUserRequest) {
@@ -99,26 +98,21 @@ public class UserController {
 		userService.removeUserByEmail(deleteUserRequest);
 		return ResponseEntity.noContent().build();
 	}
-	
+
 	// 로그인, 브라우저 종료시 로그아웃
 	@PostMapping("/login")
-	public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest, HttpSession session, HttpServletResponse response) {
-		UserResponse user = userService.loginUser(loginRequest); 
-	    sessionManager.createSession(user, response, session);
+	public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest, HttpSession session,
+			HttpServletResponse response) {
+		UserResponse user = userService.loginUser(loginRequest);
+		sessionManager.createSession(user, response, session);
 		return ResponseEntity.ok().body(user);
 	}
-	
+
 	// 로그아웃
 	@GetMapping("/logout")
 	public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
 		sessionManager.expire(request, response, session);
 		return ResponseEntity.ok().build();
-	}
-	
-	// 테스트 링크
-	@GetMapping("/check")
-	public ResponseEntity<?> loginTest() {
-        return ResponseEntity.ok().build();
 	}
 
 }

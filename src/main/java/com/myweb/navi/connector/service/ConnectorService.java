@@ -151,8 +151,8 @@ public class ConnectorService {
 	
 	private String getResponse(URL url) throws Exception {
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-		conn.setReadTimeout(5000);
-		conn.setConnectTimeout(5000);
+		conn.setReadTimeout(15000);
+		conn.setConnectTimeout(15000);
 		conn.setRequestMethod("GET");
 		conn.setRequestProperty("Content-type", "application/json");
 

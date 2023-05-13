@@ -24,7 +24,7 @@ public class SessionManager {
 		String sessionId = UUID.randomUUID().toString();
 		byte[] serializedObj = serialize(obj);
 		session.setAttribute(sessionId, serializedObj);
-		
+
 		Cookie cookie = new Cookie(SessionConst.sessionId, sessionId);
 		cookie.setHttpOnly(true);
 		cookie.setSecure(true);
@@ -62,9 +62,9 @@ public class SessionManager {
 		if (request.getCookies() == null) {
 			return null;
 		}
-		
-		for(Cookie cookie : request.getCookies()) {
-			if(cookie.getName().equals(cookieName)) {
+
+		for (Cookie cookie : request.getCookies()) {
+			if (cookie.getName().equals(cookieName)) {
 				log.info(cookie.getName());
 				log.info(cookie.getValue());
 				return cookie;
@@ -84,13 +84,13 @@ public class SessionManager {
 			throw new RuntimeException();
 		}
 	}
-	
+
 	private Object deserialize(byte[] data) {
-        try {
-            return new ObjectInputStream(new ByteArrayInputStream(data)).readObject();
-        } catch (IOException | ClassNotFoundException e) {
-            throw new RuntimeException();
-        }
-    }
+		try {
+			return new ObjectInputStream(new ByteArrayInputStream(data)).readObject();
+		} catch (IOException | ClassNotFoundException e) {
+			throw new RuntimeException();
+		}
+	}
 
 }

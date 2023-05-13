@@ -27,35 +27,31 @@ import com.myweb.navi.support.S3Uploader;
 @RestController
 @RequestMapping("/boards")
 public class BoardController {
-	
+
 	private final BoardService boardService;
 	private final S3Uploader s3Uploader;
-	
+
 	public BoardController(BoardService boardService, S3Uploader s3Uploader) {
 		this.boardService = boardService;
 		this.s3Uploader = s3Uploader;
 	}
-	
+
 	// 파일 업로드
 	@PostMapping("/upload")
 	public ResponseEntity<?> upload(@RequestParam("upload") MultipartFile file) throws IOException {
 		String url = s3Uploader.upload(file, "navi-board");
-		UploadResponse uploadResponse = UploadResponse.builder()
-				.uploaded(1)
-				.fileName(file.getOriginalFilename())
-				.url(url)
-				.build();
+		UploadResponse uploadResponse = UploadResponse.builder().uploaded(1).fileName(file.getOriginalFilename())
+				.url(url).build();
 		return ResponseEntity.ok(uploadResponse);
 	}
-	
+
 	// 게시글 쓰기
 	@PostMapping
 	public ResponseEntity<?> boardAdd(@RequestBody PostRequest postRequest) {
-		// Ckeditor에서 들어오는 HTML코드중 img 태그만 파싱해서 DB에 저장
 		boardService.addBoard(postRequest);
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
-	
+
 	// 게시글 수정
 	@PatchMapping("/{bno}")
 	public ResponseEntity<?> boardModify(@RequestBody BoardUpdateRequest boardUpdateRequest, @PathVariable Long bno) {
@@ -63,43 +59,44 @@ public class BoardController {
 		boardService.modifyBoardByBno(boardUpdateRequest);
 		return ResponseEntity.noContent().build();
 	}
-	
+
 	// 게시글 조회
 	@GetMapping("/{bno}")
-	public ResponseEntity<BoardResponse> boardfind(@PathVariable Long bno){
+	public ResponseEntity<BoardResponse> boardfind(@PathVariable Long bno) {
 		BoardResponse boardResponse = boardService.findBoardByBno(bno);
 		return ResponseEntity.ok(boardResponse);
 	}
-	
+
 	// 게시글 조회수 증가
 	@PostMapping("/{bno}/view")
 	public ResponseEntity<?> viewCountAdd(@PathVariable Long bno) {
 		boardService.addViewCount(bno);
 		return ResponseEntity.ok().build();
 	}
-	
+
 	// 게시글 전체 조회
 	@GetMapping("/list")
-	public ResponseEntity<Map<String, Object>> boardList(@RequestParam(name = "currentPage", defaultValue = "1") Integer currentPage,
-														@RequestParam(name = "postsPerPage", defaultValue = "5") Integer postsPerPage,
-														@RequestParam(name = "category", defaultValue = "title") String category,
-														@RequestParam(name = "search", defaultValue = "") String search) {
-		Map<String, Object> response = boardService.findBoardListWithPagination(currentPage, postsPerPage, category, search);
+	public ResponseEntity<Map<String, Object>> boardList(
+			@RequestParam(name = "currentPage", defaultValue = "1") Integer currentPage,
+			@RequestParam(name = "postsPerPage", defaultValue = "5") Integer postsPerPage,
+			@RequestParam(name = "category", defaultValue = "title") String category,
+			@RequestParam(name = "search", defaultValue = "") String search) {
+		Map<String, Object> response = boardService.findBoardListWithPagination(currentPage, postsPerPage, category,
+				search);
 		return ResponseEntity.ok(response);
 	}
-	
+
 	// 공지사항 조회
 	@GetMapping("/notice")
 	public ResponseEntity<List<BoardResponse>> noticeList() {
 		return ResponseEntity.ok(boardService.findNoticeList());
 	}
-	
+
 	// 게시글 삭제
 	@DeleteMapping("/{bno}")
 	public ResponseEntity<?> boardRemove(@PathVariable Long bno) {
-		// 글 삭제시 bno로 img조회 후 해당 링크에 해당하는 파일들 삭제후 DB에서 게시글 삭제(추가해야됨)
 		boardService.removeBoard(bno);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
-	
+
 }
