@@ -27,7 +27,7 @@
 ### 프론트 엔드
 * Vue.js 3
 ### 백엔드
-* Java 11, SpringBoot, JUnit5, Maven
+* Java 11, SpringBoot, Mybatis, Maven, JUnit5
 ### 인프라
 * MySQL, Redis
 * Docker, AWS EC2, AWS S3, Cloudflare
