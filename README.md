@@ -1,6 +1,11 @@
 # 🦋 나만의 비서 NAVI
-> * https://mysecnavi.store/ <br>
-> * [API 문서](https://documenter.getpostman.com/view/26905233/2s93ecwqKW)
+ > https://mysecnavi.store/ <br>
+ > [API 문서](https://documenter.getpostman.com/view/26905233/2s93ecwqKW) <br>
+
+[1. 프로젝트 소개](#프로젝트-소개) <br/>
+[2. 프로젝트 목표](#프로젝트-목표) <br/>
+[3. 프로젝트 전체 구조](#프로젝트-전체-구조) <br/>
+[4. 프로젝트 주요기능](#프로젝트-주요기능) <br/>
 
 ## 프로젝트 소개
 * 오늘 하루 필요한 여러가지 정보들을 안내하는 사이트입니다
