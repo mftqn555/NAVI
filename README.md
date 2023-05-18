@@ -1,7 +1,7 @@
 # 🦋 나만의 비서 NAVI
- > https://mysecnavi.store/ <br>
- > [API 명세](https://documenter.getpostman.com/view/26905233/2s93ecwqKW) <br>
- > [프론트 레포지토리](https://github.com/mftqn555/NAVI_front)
+ > https://mysecnavi.store/{: target="_blank"} <br>
+ > [API 명세](https://documenter.getpostman.com/view/26905233/2s93ecwqKW){: target="_blank"} <br>
+ > [프론트 레포지토리](https://github.com/mftqn555/NAVI_front){: target="_blank"}
 
 ### 목차
 [1. 프로젝트 소개](#프로젝트-소개) <br/>
