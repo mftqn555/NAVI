@@ -1,14 +1,13 @@
 # 🦋 나만의 비서 NAVI
- > https://mysecnavi.store/{: target="_blank"} <br>
- > [API 명세](https://documenter.getpostman.com/view/26905233/2s93ecwqKW){: target="_blank"} <br>
- > [프론트 레포지토리](https://github.com/mftqn555/NAVI_front){: target="_blank"}
+> <a href="https://mysecnavi.store/" target="_blank">https://mysecnavi.store/</a> <br>
+> <a href="https://documenter.getpostman.com/view/26905233/2s93ecwqKW" target="_blank">API 명세</a> <br>
+> <a href="https://github.com/mftqn555/NAVI_front" target="_blank">프론트 레포지토리</a> <br>
 
 ### 목차
 [1. 프로젝트 소개](#프로젝트-소개) <br/>
 [2. 프로젝트 목표](#프로젝트-목표) <br/>
 [3. 프로젝트 전체 구조](#프로젝트-전체-구조) <br/>
 [4. 프로젝트 주요기능](#프로젝트-주요기능) <br/>
-[5. 후기 및 피드백](#후기)
 
 ### 개발 기간
 * 2023.04.10 ~ 2023.05.18
