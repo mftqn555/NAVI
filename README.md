@@ -73,5 +73,5 @@
  1. 회원 정보 조회 및 강퇴
  2. 모든 게시글, 댓글 삭제
  3. 공지사항 작성 
-* 이메일 전송으로 회원정보 찾기 <br>
+* 회원정보 찾기 <br>
 ![password](https://github.com/mftqn555/NAVI/assets/93305133/d3a5e569-4d81-46b7-948e-e3e58fad488f)
