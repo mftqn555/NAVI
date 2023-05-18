@@ -30,8 +30,8 @@
 * Java 11, SpringBoot, JUnit5, Maven
 ### 인프라
 * MySQL, Redis
-* Docker, AWS EC2, AWS S3
-* Cloudflare, Postman
+* Docker, AWS EC2, AWS S3, Cloudflare
+* Postman, Sourcetree
 
 ## 프로젝트 주요기능
 ### 1. 인삿말
