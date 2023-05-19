@@ -25,7 +25,7 @@
 
 ## 개발환경
 ### 프론트 엔드
-* Vue.js 3
+* Vue.js 3, Bootstrap 5.2, Ckeditor 5 
 ### 백엔드
 * Java 11, SpringBoot, Mybatis, Maven, JUnit5
 ### 인프라
