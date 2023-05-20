@@ -1,7 +1,10 @@
+<div align="center">
+ 
 # 🦋 나만의 비서 NAVI
-> <a href="https://mysecnavi.store/" target="_blank">https://mysecnavi.store/</a> <br>
-> <a href="https://documenter.getpostman.com/view/26905233/2s93ecwqKW" target="_blank">API 명세</a> <br>
-> <a href="https://github.com/mftqn555/NAVI_front" target="_blank">프론트 레포지토리</a> <br>
+### 링크 <br>
+<a href="https://mysecnavi.store/" target="_blank">https://mysecnavi.store/</a> <br>
+<a href="https://documenter.getpostman.com/view/26905233/2s93ecwqKW" target="_blank">API 명세</a> <br>
+<a href="https://github.com/mftqn555/NAVI_front" target="_blank">프론트 레포지토리</a> <br>
 
 ### 목차
 [1. 프로젝트 소개](#프로젝트-소개) <br/>
@@ -10,7 +13,10 @@
 [4. 프로젝트 주요기능](#프로젝트-주요기능) <br/>
 
 ### 개발 기간
-* 2023.04.10 ~ 2023.05.18
+2023.04.10 ~ 2023.05.18
+ 
+</div>
+
 ## 프로젝트 소개
 * 오늘 하루 필요한 여러가지 정보들을 안내하는 사이트입니다
 
